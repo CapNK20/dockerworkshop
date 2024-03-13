@@ -1,0 +1,19 @@
+# Ignore all dotfolders by default. Can be manually added or overridden for specific folders
+**/.*/
+
+# Ignore local user specific files
+**/*.local
+**/*.user
+**/*.secret
+
+# Various build output packages etc
+
+# C#
+**/bin/
+**/obj/
+
+# npm
+**/node_modules/
+
+**/logs/
+
