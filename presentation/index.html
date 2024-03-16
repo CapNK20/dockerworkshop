@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="application/xhtml+xml; charset=utf-8" http-equiv="content-type">
+    <title>Docker workshop</title>
+
+
+    <link href="dist/reset.css" rel="stylesheet"/>
+    <link href="dist/reveal.css" rel="stylesheet"/>
+    <link href="dist/theme/black.css" rel="stylesheet">
+
+    <link href="plugin/highlight/monokai.css" rel="stylesheet">
+</head>
+<body>
+<p style="font-size: x-large">
+    <a href="https://github.com/CapNK20/dockerworkshop">https://github.com/CapNK20/dockerworkshop</a>
+</p>
+<div class="reveal">
+    <div class="slides">
+        <section>Docker for tinkerers</section>
+        <section data-markdown="slides/prereq.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/keyboard.md"></section>
+        <section data-markdown="slides/multi.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/arguments.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/scratch.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/juggling_versions.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/watch.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/syntax_directive.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/proxy.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/least_privilege.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/scout.md" data-separator-vertical="^#--#\s*"></section>
+        <section data-markdown="slides/next.md" data-separator-vertical="^#--#\s*"></section>
+    </div>
+</div>
+
+<script src="dist/reveal.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        // ,slideNumber: true
+    });
+</script>
+</body>
+</html>

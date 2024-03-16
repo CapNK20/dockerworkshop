@@ -1,0 +1,9 @@
+[package]
+name = "hellodocker"
+version = "0.1.0"
+authors = ["nilsp"]
+publish = false
+
+
+
+[dependencies]

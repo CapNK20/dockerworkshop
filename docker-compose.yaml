@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  presentation:
+    build:
+      context: presentation
+    ports:
+      - "8888:80"
+    volumes:
+      - ./presentation/index.html:/usr/share/nginx/html/index.html
+      - ./presentation/slides:/usr/share/nginx/html/slides/
