@@ -1,0 +1,8 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+WORKDIR /app
+COPY backend.csproj .
+RUN dotnet restore
+COPY . .
+
+CMD dotnet watch --non-interactive
