@@ -10,26 +10,287 @@
     <link href="dist/theme/black.css" rel="stylesheet">
 
     <link href="plugin/highlight/monokai.css" rel="stylesheet">
+    <link href="files/customstyle.css" rel="stylesheet">
 </head>
 <body>
-<p style="font-size: x-large">
+<p class="presentationlink">
     <a href="https://github.com/CapNK20/dockerworkshop">https://github.com/CapNK20/dockerworkshop</a>
 </p>
 <div class="reveal">
     <div class="slides">
         <section>Docker for tinkerers</section>
-        <section data-markdown="slides/prereq.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/keyboard.md"></section>
-        <section data-markdown="slides/multi.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/arguments.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/scratch.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/juggling_versions.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/proxy.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/watch.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/syntax_directive.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/least_privilege.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/scout.md" data-separator-vertical="^#--#\s*"></section>
-        <section data-markdown="slides/next.md" data-separator-vertical="^#--#\s*"></section>
+
+        <section>
+            <section>
+                <h1>Prerequisites</h1>
+                <ul>
+                    <li>Something that can build docker images</li>
+                    <li>Something that can run docker images</li>
+                    <li>Something that can run docker compose files</li>
+                    <li>Something that can edit files</li>
+                    <li>A command line</li>
+                    <li>A browser</li>
+                </ul>
+            </section>
+
+            <section>
+                <h1>Please be a little more specific!!</h1>
+            </section>
+
+            <section>
+                <h1>Recommended on windows:</h1>
+                <ul>
+                    <li>Docker desktop, running using WSL2</li>
+                    <li>A Jetbrains IDE or Visual Studio Code</li>
+                    <li>Chrome or Firefox</li>
+                    <li>bash inside WSL, or powershell</li>
+                </ul>
+            </section>
+
+            <section>
+                <h1>Recommended on mac:</h1>
+
+                <p>TODO</p>
+
+                <ul>
+                    <li>Docker desktop?</li>
+                    <li>A Jetbrains IDE or Visual Studio Code?</li>
+                    <li>Chrome or Firefox or Safari?</li>
+                    <li>bash? something else?</li>
+                </ul>
+            </section>
+
+            <section>
+                <h1>What if I don't have docker?</h1>
+
+                <ul>
+                    <li><p>Play with docker</p>
+                        <ul>
+                            <li>Gives you a free temporary playground. You just need a docker account</li>
+                            <li><a href="https://labs.play-with-docker.com/">https://labs.play-with-docker.com</a></li>
+                        </ul>
+                    </li>
+                    <li>Azure</li>
+                    <li>Aws</li>
+                    <li>Google cloud</li>
+                </ul>
+                <aside class="notes">
+                    Play with docker and the cloud services can be used in the browser, but it's probably better with an
+                    ssh client
+                    or other
+                    method
+                </aside>
+            </section>
+
+        </section>
+        <section>
+            <h1>Navigating the presentation</h1>
+            <ul>
+                <li>`Space` for next slide</li>
+                <li>Arrow keys to navigate slides</li>
+                <li>`O` or `Esc` to open the overview</li>
+                <li>`S` to open the speaker notes</li>
+            </ul>
+        </section>
+
+        <section>
+            <section>
+                <h1>Multi stage builds</h1>
+                <p>Getting a final image without all the intermediate build layers</p>
+            </section>
+
+            <section>
+                <h1>Why?</h1>
+                <ul>
+                    <li>Keep things only needed for building out of the final image</li>
+                    <li>Separation of concerns</li>
+                    <li>Optimize build</li>
+                </ul>
+                <aside class="notes">
+                    <p>Keeping things out of the final image has two advantages. 1: The less that is there the less
+                        tools an attacker has to work with. 2: Making the final running image smaller can save some
+                        resources</p>
+                    <p>Build can also be faster because if there are multiple stages buildkit may run them in parallell
+                        if resources and dependencies between the projects permit</p>
+                </aside>
+            </section>
+
+            <section>
+                <h1>How?</h1>
+                <pre><code class="language-dockerfile" data-trim>
+                    FROM sdk AS builder
+                    COPY source .
+                    RUN build.sh
+
+                    FROM gen AS datagenerator
+                    COPY data-source .
+                    RUN generate.sh
+
+                    FROM runtime
+                    COPY --from=builder build-result/mycmd .
+                    COPY --from=datagenerator data data
+                    ENTRYPOINT ["mycmd"]
+                </code></pre>
+                <aside class="notes">
+                    Here the builder and the datagenerator don't depend on each other so they could end up being run in
+                    parallell. The final image depends on both of them so will be build last.
+                </aside>
+            </section>
+        </section>
+
+        <section>
+            <section>
+                <h1>Using build time arguments</h1>
+                <p>Lets us give arguements to the build, so we could build different images from the same dockerfile and
+                    source. Or provide values that aren't known when making the Dockerfile
+            </section>
+
+            <section>
+                <p><code>examples/buildargs</code></p>
+                <pre><code class="language-bash" data-trim>
+                    $ docker build -t tmp .
+                    $ docker run tmp
+                    $ docker build -t tmp --build-arg version=1.2.3.4 .
+                    $ docker run tmp
+                </code></pre>
+
+            </section>
+        </section>
+
+        <section>
+            <h1>Divide and conquer with `include` in docker compose</h1>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <section>
+                <h1>Starting from a clean slate</h1>
+
+                <p>Using <code>FROM scratch</code></p>
+
+                <aside class="notes">
+
+                    You don have to start from a base image. If you start from the special keyword `scratch` you will
+                    get an image with only
+                    the files you add to it, no operating system or anything. That's only useful if you don't need them
+                    but can give really
+                    tiny images.
+                </aside>
+            </section>
+
+            <section>
+            <pre><code class="language-dockerfile" data-trim>
+                FROM foo AS build
+                WORKDIR build
+                COPY . .
+                RUN buid_static_executable
+
+                FROM scratch
+                COPY --from=build /build/output/static_executable \
+                  /bin/static_executable
+                ENTRYPOINT ["/bin/static_executable"]
+            </code></pre>
+            </section>
+
+            <section>
+                <code>examples/scratch</code>
+                <pre><code class="language-bash" data-trim>
+                    $ docker build -t tiny
+                    $ docker run --rm tiny
+                    Hello, world!
+                </code></pre>
+                <p>Pull down some common base images and compare sizes</p>
+                <pre><code class="language-bash" data-trim>
+                    $ docker pull ubuntu
+                    $ docker pul alpine
+                    $ docker image ls --filter=reference=ubuntu \
+                        --filter=reference=alpine --filter=reference=tiny
+                </code></pre>
+            </section>
+        </section>
+
+        <section>
+            <h1>Juggling versions</h1>
+            <p>Dealing with multiple projects needing different versions of dependencies, by doing the development work
+                inside
+                docker</p>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <h1>Using a proxy to serve everything from the same "domain"</h1>
+            <p>Because CORS is a pain, and handling cookies when testing locally is only going to get worse once chrome
+                starts
+                blocking all third party cookies by default</p>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <section>
+                <h1>Watching files with docker compose</h1>
+                <ul>
+                    <li>Use watch function in language/runtime to refresh when there are changes that can be hot
+                        reloaded
+                    </li>
+                    <li>Use watch in docker compose to restart when there are changes that need the services to be
+                        restarted
+                    </li>
+                    <li>Use watch in docker compose to rebuild images when there are changes that require a new image
+                    </li>
+                </ul>
+            </section>
+
+            <section>
+                <code>examples/scratch</code>
+                <pre><code class="language-bash" data-trim>
+                    $ docker compose watch
+                </code></pre>
+                <p>What happens when you:</p>
+                <ul>
+                    <li>Make a change to <code>frontend/index.html</code>?</li>
+                    <li>Run <code>npm install so that</code> so that the package lock file changes?</li>
+                    <li>Change <code>launchSettings.json</code>?</li>
+                    <li>Add something to one of the dockerfiles?</li>
+                </ul>
+            </section>
+        </section>
+
+        <section>
+            <h1>Using the syntax directive to use new or experimental features</h1>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <h1>Principle of least privilege</h1>
+            <p>Running without admin rights</p>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <h1>Check image security with docker scout</h1>
+            <p>Local analysis is included for free with docker desktop</p>
+            <p>TODO</p>
+        </section>
+
+        <section>
+            <section>
+                <h1>What to do next. Links and stuff</h1>
+                <p>TODO</p>
+            </section>
+
+            <section>
+                <h1> Swarm</h1>
+                <p>Quickest way to try out running with multiple instances and load balancing locally</p>
+            </section>
+
+            <section>
+                <h1>Kubernetes</h1>
+                <p>If your production environment is running on kubernetes you should probably skip swarm and go
+                    straight here</p>
+                <h2>What is kubernetes</h2>
+                <p>TODO</p>
+            </section>
+        </section>
     </div>
 </div>
 
@@ -40,7 +301,11 @@
 <script>
     Reveal.initialize({
         hash: true,
-        plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        plugins: [
+            RevealMarkdown,
+            RevealHighlight,
+            RevealNotes
+        ]
         // ,slideNumber: true
     });
 </script>
