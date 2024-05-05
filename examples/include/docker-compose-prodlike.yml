@@ -1,0 +1,6 @@
+include:
+  - docker-compose-includes/docker-compose-proxy.yaml
+  - docker-compose-includes/docker-compose-frontend.yaml
+  - docker-compose-includes/docker-compose-backend.yaml
+
+# TODO DB in dev connectionstring in prodlike

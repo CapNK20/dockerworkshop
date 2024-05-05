@@ -1,0 +1,4 @@
+include:
+  - path:
+      - docker-compose-proxy.yaml
+      - docker-compose-proxy-watch-fragment.yaml

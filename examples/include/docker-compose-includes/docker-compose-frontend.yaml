@@ -1,0 +1,7 @@
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Static.dockerfile
+    ports:
+      - "3000:80"

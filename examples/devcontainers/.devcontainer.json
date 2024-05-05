@@ -1,0 +1,11 @@
+{
+  "name": "Node.js old version for legacy stuff",
+
+  "image": "node:16-buster",
+
+//  "features": { },
+//  "forwardPorts": [],
+//  "postCreateCommand": [],
+//  "customizations": { },
+  "remoteUser": "node"
+}

@@ -158,11 +158,6 @@
         </section>
 
         <section>
-            <h1>Divide and conquer with `include` in docker compose</h1>
-            <p>TODO</p>
-        </section>
-
-        <section>
             <section>
                 <h1>Starting from a clean slate</h1>
 
@@ -210,11 +205,35 @@
         </section>
 
         <section>
-            <h1>Juggling versions</h1>
-            <p>Dealing with multiple projects needing different versions of dependencies, by doing the development work
-                inside
-                docker</p>
-            <p>TODO</p>
+            <section>
+                <h1>Juggling versions</h1>
+                <p>Dealing with multiple projects needing different versions of dependencies, by doing the development
+                    work
+                    inside docker</p>
+                <p>Good IDEs have build in support using built in using standardized dev containers</p>
+                <ul>
+                    <li><a href="https://containers.dev/">https://containers.dev/</a></li>
+                    <li><a href="https://code.visualstudio.com/docs/devcontainers/containers">https://code.visualstudio.com/docs/devcontainers/containers</a>
+                    </li>
+                    <li><a href="https://www.jetbrains.com/help/idea/connect-to-devcontainer.html">https://www.jetbrains.com/help/idea/connect-to-devcontainer.html</a>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    <p>No, Visual Studio is currently not a good IDE, because it doesn't have dev container support. <i>qed</i>
+                    </p>
+                </aside>
+            </section>
+
+            <section>
+                <p><code>examples/devcontainers</code></p>
+                <p>Visual studio code:</p>
+                <p>Make sure dev containers extension is installed. Open folder, popup asks if you want to open in dev
+                    container. Confirm</p>
+                <br/>
+                <p>Intellij family of IDEs:</p>
+                <p>Make sure dev container plugin is installed and enabled. Either choose devcontainer from the initial
+                    "Open project" window. Or open the folder and right click on the devcontainers json</p>
+            </section>
         </section>
 
         <section>
@@ -256,20 +275,149 @@
         </section>
 
         <section>
-            <h1>Using the syntax directive to use new or experimental features</h1>
-            <p>TODO</p>
+            <section>
+                <h1>Divide and conquer</h1>
+                <h2> with <code>include</code> and <code>extends</code></h2>
+                <p>Include and extends allow reuse between multiple docker compose files</p>
+                <aside class="notes">
+                    <p>sooner or later you you'll end up using docker for multiple things. perhaps sometimes run the
+                        frontend and backend locally, but using an external database instead of a local one. or maybe
+                        sometimes configured for extra logging. Eventually editing the docker compose for specific
+                        scenarios, and remembering to undo before committing, becomes a pain in the &#x1facf;. At this
+                        point itś logical to start introducing different compose files for different purposes, and you
+                        will soon run into the problem of having duplicates and keeping them in sync. That's when being
+                        able to split a compose file into reusable parts becomes useful</p>
+                </aside>
+            </section>
+
+            <section>
+                <h2>Short syntax</h2>
+                <pre><code class="language-yaml" data-trim>
+                    include:
+                      - file1.yaml
+                      - file2.yaml
+                </code></pre>
+                <h2>Long syntax</h2>
+                <pre><code class="language-yaml" data-trim>
+                    include:
+                      - path: file1.yaml
+                        project_directory: ./some/where
+                        env_file: file1.env
+                      - path: file2.yaml
+                </code></pre>
+                <aside class="notes">
+                    <p>project_directory is optional and sets where to resolve relative paths in the file. It defaults
+                        to the folder of the file</p>
+                    <p>env_file is optional and is used to override values for variables in the imported compose file.
+                        Defaults to .env in project_directory</p>
+                </aside>
+            </section>
+
+            <section>
+                <h2>Use multiple paths to merge definitions</h2>
+                <pre><code class="language-yaml" data-trim>
+                    include:
+                      - path:
+                          - file1.yaml
+                          - file2.yaml
+                        project_directory: ./some/where
+                        env_file: file1.env
+                </code></pre>
+                <aside class="notes">
+                    <p>If two files in separate includes specify the same service name they will conflict and docker
+                        compose will refuse</p>
+                    <p>To have yaml files merged specify two or more in a single include (requires long syntax)</p>
+                </aside>
+            </section>
+
+            <section>
+                <h1>Using extends</h1>
+                <p>TODO example</p>
+            </section>
         </section>
 
         <section>
-            <h1>Principle of least privilege</h1>
-            <p>Running without admin rights</p>
-            <p>TODO</p>
+            <section>
+                <h1>Using the syntax directive</h1>
+                <p>To get new or experimental features</p>
+            </section>
+
+            <section>
+                <pre><code class="language-dockerfile" data-trim># syntax=docker/dockerfile:1</code></pre>
+                <p>Will get you the latest stable version 1</p>
+                <aside class="notes">
+                    <p>If you don't specify anything you will get whatever shipped with your docker installation, which
+                        may be out of date</p>
+                </aside>
+            </section>
+
+            <section>
+                <pre><code class="language-dockerfile" data-trim># syntax=docker/dockerfile:labs</code></pre>
+                <p>Gets you the latest experimental release</p>
+                <pre><code class="language-dockerfile" data-trim># syntax=docker/dockerfile-upstream:master-labs</code></pre>
+                <p>Uses latest prerelease version. Be prepared for things to break</p>
+                <aside class="notes">
+                    <p><code>docker/dockerfile:1</code> refers to a dockerfile frontend, an image that can read a file
+                        and output LLB instructions that buildkit understands and turns into a new image. There is also
+                        a bunch of alternate frontends that reads formats that may or may not look like dockerfiles.M
+                    </p>
+                    <ul>
+                        <li>Mockerfile. a yaml syntax for specifing a build. Because apparently some people like yaml
+                        </li>
+                        <li>one that can read a rust project file with a little extra metadata, and create an optimized
+                            parallel image build for it
+                        </li>
+                        <li>Mopy. Another yaml syntax. This one specifically for building python based images</li>
+                    </ul>
+                </aside>
+            </section>
         </section>
 
         <section>
-            <h1>Check image security with docker scout</h1>
-            <p>Local analysis is included for free with docker desktop</p>
-            <p>TODO</p>
+            <section>
+                <h1>Principle of least privilege</h1>
+                <p>Running without admin rights</p>
+                <aside class="notes">
+                    <p>Combine with using multi stage build to create an image with as few extras as possible. Leaving
+                        an attacker as little to work with as possible</p>
+                </aside>
+            </section>
+
+            <section>
+                <pre><code class="language-dockerfile" data-trim>
+                    FROM sdk AS builder
+                    COPY source .
+                    RUN build
+
+                    FROM tiny-runtime
+                    COPY --from=builder --chmod=555 executable .
+                    # Add user if not provided by image
+                    RUN useradd --no-create-home --shell /bin/false --user-group app
+                    USER app:app
+                    ENTRYPOINT ["executable"]
+                </code></pre>
+                <aside class="notes">
+                    <p>Useradd command creates a user without a home folder, and with /bin/false as the shell. Leaving
+                        it as few privileges as possible</p>
+                    <p>Command to create user differs between base images. You need to check the docs</p>
+                    <p>We do the copying and stuff before the <code>USER</code> statement. Because the runtime user
+                        won't have the permissions to create those files</p>
+                    <p>You may need to give the user permissions for </p>
+                </aside>
+            </section>
+        </section>
+
+        <section>
+            <section>
+                <h1>Check image security with docker scout</h1>
+                <p>Local analysis is included for free with docker desktop</p>
+            </section>
+
+            <section>
+                <p>TODO example by running devcontainer from earlier. Grabbing the image is and scanning that. Should
+                    get some hits because of old node</p>
+            </section>
+
         </section>
 
         <section>
@@ -279,7 +427,7 @@
             </section>
 
             <section>
-                <h1> Swarm</h1>
+                <h1>Swarm</h1>
                 <p>Quickest way to try out running with multiple instances and load balancing locally</p>
             </section>
 

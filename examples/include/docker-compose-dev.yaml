@@ -1,0 +1,5 @@
+include:
+  - docker-compose-includes/docker-compose-proxy-watch.yaml
+  - docker-compose-includes/docker-compose-frontend-watch.yaml
+  - docker-compose-includes/docker-compose-backend-watch.yaml
+

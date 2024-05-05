@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    develop:
+      # Note that dotnet cannot hot reload all types of changes. This example is a starting point but next steps
+      # should be to restructure the project, move the endpoints out of Program.cs, make Program.cs changes trigger
+      # sync+restart and separate the startup that isn't hot reloaded from the functions that are.
+      watch:
+        - path: ./backend/backend.csproj
+          action: rebuild
+        - path: ./backend/Properties/launchSettings.json
+          target: /app/backend/Properties/launchSettings.json
+          action: sync+restart
+        - path: ./backend
+          target: /app
+          action: sync

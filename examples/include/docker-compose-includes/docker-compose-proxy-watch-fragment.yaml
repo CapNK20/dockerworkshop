@@ -1,0 +1,7 @@
+services:
+  proxy:
+    develop:
+      watch:
+        - action: sync+restart
+          path: ../proxy/nginx.conf
+          target: /etc/nginx/nginx.conf

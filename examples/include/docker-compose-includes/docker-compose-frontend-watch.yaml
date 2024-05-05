@@ -1,0 +1,16 @@
+frontend:
+  build:
+    context: frontend
+  develop:
+    # Note: This is a starting point. Anything that the vite hot reloading doesn't handle should be added here as
+    # either sync+restart or rebuild
+    watch:
+      - path: ./frontend/Dockerfile
+        action: rebuild
+      - path: ./frontend/package-lock.json
+        action: rebuild
+      - path: ./frontend
+        target: /frontend
+        action: sync
+        ignore:
+          - node_modules/
