@@ -7,4 +7,4 @@ COPY . .
 RUN dotnet build /p:Version=$version --version-suffix rc &&  bin/Debug/net8.0/buildargs
 # RUN dotnet publish --no-build
 
-CMD /app/bin/Debug/net8.0/buildargs
+CMD ["/app/bin/Debug/net8.0/buildargs"]

@@ -146,14 +146,17 @@
             </section>
 
             <section>
-                <p><code>examples/buildargs</code></p>
+                <p><code>challenge/buildargs</code></p>
+                <p>Change the dockerfile so that it can take a version as a build argument and compile that into the
+                    executable in the docker image. You shouldn't need to change anything in the project code</p>
+                <p><a href="https://docs.docker.com/reference/dockerfile/#arg">https://docs.docker.com/reference/dockerfile/#arg</a>
+                </p>
                 <pre><code class="language-bash" data-trim>
                     $ docker build -t tmp .
                     $ docker run tmp
                     $ docker build -t tmp --build-arg version=1.2.3.4 .
                     $ docker run tmp
                 </code></pre>
-
             </section>
         </section>
 
