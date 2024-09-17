@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Bar api
+  version: '0.1'
+  description: |
+    # The superduperest api ever!
+servers:
+  - url: http://localhost/bar-api/api
+
+paths:
+  /bars:
+    get:
+      operationId: GetBars
+      summary: Gets a list of all bars
+      responses:
+        200:
+          description: A list of bars
+  /bars/{id}:
+    get:
+      operationId: GetBar
+      summary: Gets a bar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Gets a single bar

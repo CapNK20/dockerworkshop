@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Foo api
+  version: '0.1'
+  description: |
+    # The awesomest api evah!
+servers:
+  - url: http://localhost/foo-api/api
+
+paths:
+  /foos:
+    get:
+      operationId: GetFoos
+      summary: Gets a list of all foos
+      responses:
+        200:
+          description: A list of foos
+  /foos/{id}:
+    get:
+      operationId: GetFoo
+      summary: Gets a foo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Gets a single foo

@@ -1,0 +1,24 @@
+# TODO: Look into docker compose secrets because it seems they've added support for them without having to run on swarm
+
+services:
+  foo-api:
+    build:
+      dockerfile: Foo.dockerfile
+
+  bar-api:
+    build:
+      dockerfile: Bar.dockerfile
+
+  swaggerui:
+    build:
+      context: .
+      dockerfile: swaggerui.dockerfile
+    environment:
+      BASE_URL: "/swagger"
+
+  proxy:
+    build:
+      context: .
+      dockerfile: proxy.dockerfile
+    ports:
+      - "80:80"

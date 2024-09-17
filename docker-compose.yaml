@@ -1,3 +1,7 @@
+# There is no version 3.9 og the docker file format, 3.8 was the last one
+# before the Docker Compose Specification took over. 3.9 is used to trigger
+# an error if you're using way too old docker (newer ones will warn about
+# version, but old ones should refuse)
 version: "3.9"
 services:
   presentation:
