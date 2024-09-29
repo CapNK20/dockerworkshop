@@ -37,7 +37,7 @@
             </section>
 
             <section>
-                <h1>Recommended on windows:</h1>
+                <h1>Recommended on Windows:</h1>
                 <ul>
                     <li>Docker desktop, running using WSL2</li>
                     <li>A Jetbrains IDE or Visual Studio Code</li>
@@ -47,15 +47,21 @@
             </section>
 
             <section>
-                <h1>Recommended on mac:</h1>
-
-                <p>TODO</p>
-
+                <h1>Recommended on Mac:</h1>
                 <ul>
-                    <li>Docker desktop?</li>
-                    <li>A Jetbrains IDE or Visual Studio Code?</li>
-                    <li>Chrome or Firefox or Safari?</li>
-                    <li>bash? something else?</li>
+                    <li>Docker desktop</li>
+                    <li>A Jetbrains IDE or Visual Studio Code</li>
+                    <li>Chrome or Safari?</li>
+                    <li>Terminal or Warp</li>
+                </ul>
+            </section>
+
+            <section>
+                <h1>Recommended on Linux:</h1>
+                <ul>
+                    <li>Since you're running Linux we're just going to assume you know what you are doing, and have this
+                        all figured out yourself
+                    </li>
                 </ul>
             </section>
 
@@ -85,10 +91,11 @@
         <section>
             <h1>Navigating the presentation</h1>
             <ul>
-                <li>`Space` for next slide</li>
+                <li><code>Space</code> for next slide</li>
                 <li>Arrow keys to navigate slides</li>
-                <li>`O` or `Esc` to open the overview</li>
-                <li>`S` to open the speaker notes</li>
+                <li><code>O</code> or <code>Esc</code> to open the overview</li>
+                <li><code>S</code> to open the speaker notes</li>
+                <li><code>Alt</code> + <code>mouse click</code> to zoom</li>
             </ul>
         </section>
 
@@ -242,10 +249,32 @@
                 <h1>Exercise</h1>
                 <ol>
                     <li>Make a devcontainer for a project you're working on</li>
-                    <li>Find a github project that you don have the tools for installed on your machine. Make a
+                    <li>Find a github project that you don't have the tools for installed on your machine. Make a
                         devcontainer for it
                     </li>
                 </ol>
+            </section>
+        </section>
+
+        <section>
+            <section>
+                <h1>Piping into and out of containers</h1>
+                <h2>Or, how to make scripts use tools that the runnner doesn't have</h2>
+                <p>Pipe through and run it inside docker to handle missing tools</p>
+            </section>
+
+            <section>
+                <h2>Example (powershell)</h2>
+                <p>Usinq jq to parse json, without having jq installed</p>
+                <pre><code class="language-powershell" data-trim>
+                    Invoke-WebRequest -Uri `
+                    'https://api.met.no/weatherapi/locationforecast/2.0/mini?lat=59.178334328071884&amp;lon=10.218610413019128' `
+                    | Select-Object -ExpandProperty Content | docker run --rm -i ghcr.io/jqlang/jq `
+                    '.properties.timeseries[0].data.next_1_hours.summary.symbol_code'</code></pre>
+                <aside class="notes">
+                    Those <code>`</code> are powerhell line continuation, like you would use <code>\</code> in other
+                    shells
+                </aside>
             </section>
         </section>
 
@@ -357,7 +386,8 @@
 
             <section>
                 <h1>Using extends</h1>
-                <p>TODO example</p>
+                <p>Extends can pull in services defined in another file. It can be useful for reusing parts of another
+                    compose file</p>
             </section>
         </section>
 
@@ -400,15 +430,52 @@
 
         <section>
             <section>
-                <h1>Principle of least privilege</h1>
-                <p>Running without admin rights</p>
+                <h1>Securing images for production</h1>
+                <h2>Reduce the attack surface</h2>
+                <ul>
+                    <li>Use base images without unneeded extra tools.</li>
+                    <li>Learn to use docker debug instead</li>
+                </ul>
+                <h2>Principle of least privilege</h2>
+                <ul>
+                    <li>Run without admin rights</li>
+                    <li>Run with readonly file system</li>
+                </ul>
+            </section>
+
+            <section>
+                <ul>
+                    <li>Leave as few tools as possible for an attacker to use</li>
+                    <li>You want your images to be as slim as
+                        possible, and ideally contain nothing that isn't needed for running the service or tool it
+                        contains.
+                    </li>
+                    <li>This usually means multi-stage builds and carefully picking the base for your runtime
+                        image.
+                    </li>
+                    <li> Sometimes you can install an extra tool or two as an alternative to using a bigger base
+                        image
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <p>Drawback is that when you need it yourself you lack the tools.</p>
+                <p>Example <code>docker run --name my-app hello-world</code> will run a very small example image. That
+                    doesn't contain tools you might need to debug it if it is failing, such as <code>curl</code>.</p>
+                <p>Use <code>docker debug</code> to attach a shell to a running or stopped container. (Requires Pro or
+                    higher)</p>
+                <p>Example: Run <code>docker debug --shell bash my-app</code> inside you can now run the usual tools,
+                    and some
+                    extras that are built in like <code>entrypoint</code></p>
                 <aside class="notes">
-                    <p>Combine with using multi stage build to create an image with as few extras as possible. Leaving
-                        an attacker as little to work with as possible</p>
+                    Can use <code>docker run --rm hello-world sh</code> to show how the image doesn't contain either a
+                    shell or the ls command
                 </aside>
             </section>
 
             <section>
+                <h1>Running without admin rights</h1>
+                <p>Some runtime images already come prepared, but you can do it yourself if you have to</p>
                 <pre><code class="language-dockerfile" data-trim>
                     FROM sdk AS builder
                     COPY source .
@@ -422,13 +489,53 @@
                     ENTRYPOINT ["executable"]
                 </code></pre>
                 <aside class="notes">
+                    <p>For example since version 8 dotnet images already have an <code>app</code> user out of the box
+                    </p>
                     <p>Useradd command creates a user without a home folder, and with /bin/false as the shell. Leaving
                         it as few privileges as possible</p>
                     <p>Command to create user differs between base images. You need to check the docs</p>
                     <p>We do the copying and stuff before the <code>USER</code> statement. Because the runtime user
                         won't have the permissions to create those files</p>
-                    <p>You may need to give the user permissions for </p>
                 </aside>
+            </section>
+
+            <section>
+                <h1>Prepare for running with readonly file system</h1>
+                <p>Document the minimum that the server needs to have access to write. Preferably nothing.</p>
+                <ul>
+                    <li>In docker run use <code>--read-only</code> flag</li>
+                    <li>In docker compose specify the <code>read_only</code> option on the service
+                    </li>
+                    <li>Requires you to know of, and make volumes for, any folders that are need such as if the service
+                        uses temporary files or writes logs to files
+                    </li>
+                    <li>Remember to make any volumes readonly if the service doesn't need to write to them</li>
+                    <li><code>tmpfs</code>for temporary files you don't need to keep</li>
+                    <li><code>noexec</code> if you can</li>
+                </ul>
+            </section>
+            <section>
+                <pre><code class="language-dockerfile" data-line-numbers="4|9|17-18|19" data-trim>
+                    services:
+                      my-service:
+                        image: my-image
+                        read_only: true
+                        volumes:
+                          - type: bind
+                            source: "./mounted-files"
+                            target: "/app/mountpoint2"
+                            read_only: true
+                          - type: volume
+                            source: my-non-persistent-volume
+                            target: /app/tmp
+                    volumes:
+                      my-non-persistent-volume:
+                        driver: local
+                        driver_opts:
+                          type: tmpfs
+                          device: tmpfs
+                          o: noexec,nosuid,nodev
+                </code></pre>
             </section>
         </section>
 
@@ -439,30 +546,78 @@
             </section>
 
             <section>
-                <p>TODO example by running devcontainer from earlier. Grabbing the image is and scanning that. Should
+                <p>Example by running devcontainer from earlier. Grabbing the image is and scanning that. Should
                     get some hits because of old node</p>
+                <ul>
+                    <li>Find the image name in docker desktop or the output of <code>docker image ls</code>. On windows
+                        it is something similar to <code>vsc-devcontainers-{randomid}-uid</code> but this might vary.
+                    </li>
+                    <li>Run <code>docker scout cves {imagename}</code> and examine the output</li>
+                </ul>
             </section>
-
         </section>
 
         <section>
             <section>
                 <h1>What to do next. Links and stuff</h1>
-                <p>TODO</p>
             </section>
 
             <section>
                 <h1>Swarm</h1>
                 <p>Quickest way to try out running with multiple instances and load balancing locally</p>
+                <p><a href="https://docs.docker.com/engine/swarm/swarm-tutorial/">https://docs.docker.com/engine/swarm/swarm-tutorial/</a>
+                </p>
             </section>
 
             <section>
                 <h1>Kubernetes</h1>
+                <p>Affectionately known as k8s</p>
+                <blockquote> "Kubernetes is a portable, extensible, open source platform for managing containerized
+                    workloads and services, that facilitates both declarative configuration and automation. It has a
+                    large, rapidly growing ecosystem."
+                </blockquote>
                 <p>If your production environment is running on kubernetes you should probably skip swarm and go
                     straight here</p>
-                <h2>What is kubernetes</h2>
-                <p>TODO</p>
+                <p><a href="https://kubernetes.io/">https://kubernetes.io/</a></p>
             </section>
+
+            <section>
+                <h1>Alternatives</h1>
+                <p>Podman: <a href="https://podman.io/">https://podman.io/</a></p>
+                <p>Buildah: <a href="https://buildah.io/">https://buildah.io/</a></p>
+                <p>Kaniko: <a href="https://github.com/GoogleContainerTools/kaniko">https://github.com/GoogleContainerTools/kaniko</a>
+                </p>
+            </section>
+
+            <section>
+                <h1>Running your own container registry / cache</h1>
+                <p>There are multiple, open source or proprietary, self hosted or SAAS, ways of having your own
+                    registry. Check out</p>
+                <ul>
+                    <li>
+                        <a href="https://www.docker.com/blog/how-to-use-your-own-registry-2/">https://www.docker.com/blog/how-to-use-your-own-registry-2/</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/distribution/distribution">https://github.com/distribution/distribution</a>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    <p>But why?</p>
+                    <ul>
+                        <li>To keep your images to yourself</li>
+                        <li>To keep images in development apart from released ones</li>
+                        <li>To save on docker hub costs</li>
+                        <li>To enforce rules, such as security scanning</li>
+                        <li>To guard against supply chain attacks by only allowing official and allowlisted images and
+                            versions
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+        </section>
+
+        <section>
+
         </section>
     </div>
 </div>
