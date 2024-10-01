@@ -81,9 +81,7 @@
                 </ul>
                 <aside class="notes">
                     Play with docker and the cloud services can be used in the browser, but it's probably better with an
-                    ssh client
-                    or other
-                    method
+                    ssh client or other method
                 </aside>
             </section>
 
@@ -116,7 +114,7 @@
                     <p>Keeping things out of the final image has two advantages. 1: The less that is there the less
                         tools an attacker has to work with. 2: Making the final running image smaller can save some
                         resources</p>
-                    <p>Build can also be faster because if there are multiple stages buildkit may run them in parallell
+                    <p>Build can also be faster because if there are multiple stages buildkit may run them in parallel
                         if resources and dependencies between the projects permit</p>
                 </aside>
             </section>
@@ -147,7 +145,7 @@
         <section>
             <section>
                 <h1>Using build time arguments</h1>
-                <p>Lets us give arguements to the build, so we could build different images from the same dockerfile and
+                <p>Lets us give arguments to the build, so we could build different images from the same dockerfile and
                     source. Or provide values that aren't known when making the Dockerfile
             </section>
 
@@ -174,7 +172,6 @@
                 <p>Using <code>FROM scratch</code></p>
 
                 <aside class="notes">
-
                     You don have to start from a base image. If you start from the special keyword `scratch` you will
                     get an image with only
                     the files you add to it, no operating system or anything. That's only useful if you don't need them
@@ -218,8 +215,7 @@
             <section>
                 <h1>Juggling versions</h1>
                 <p>Dealing with multiple projects needing different versions of dependencies, by doing the development
-                    work
-                    inside docker</p>
+                    work inside docker</p>
                 <p>Good IDEs have build in support using built in using standardized dev containers</p>
                 <ul>
                     <li><a href="https://containers.dev/">https://containers.dev/</a></li>
@@ -246,7 +242,7 @@
             </section>
 
             <section>
-                <h1>Exercise</h1>
+                <h1>Exercises</h1>
                 <ol>
                     <li>Make a devcontainer for a project you're working on</li>
                     <li>Find a github project that you don't have the tools for installed on your machine. Make a
@@ -259,18 +255,24 @@
         <section>
             <section>
                 <h1>Piping into and out of containers</h1>
-                <h2>Or, how to make scripts use tools that the runnner doesn't have</h2>
+                <h2>Or, how to make scripts use tools that the runner doesn't have</h2>
                 <p>Pipe through and run it inside docker to handle missing tools</p>
             </section>
 
             <section>
-                <h2>Example (powershell)</h2>
-                <p>Usinq jq to parse json, without having jq installed</p>
+                <h2>Example. Usinq jq to parse json, without having jq installed: </h2>
+                <p>powershell:</p>
                 <pre><code class="language-powershell" data-trim>
                     Invoke-WebRequest -Uri `
                     'https://api.met.no/weatherapi/locationforecast/2.0/mini?lat=59.178334328071884&amp;lon=10.218610413019128' `
                     | Select-Object -ExpandProperty Content | docker run --rm -i ghcr.io/jqlang/jq `
                     '.properties.timeseries[0].data.next_1_hours.summary.symbol_code'</code></pre>
+                <p>bash:</p>
+                <pre><code class="language-bash" data-trim>
+                    curl -s \
+                    'https://api.met.no/weatherapi/locationforecast/2.0/mini?lat=59.178334328071884&amp;lon=10.218610413019128' \
+                    | docker run --rm -i ghcr.io/jqlang/jq '.properties.timeseries[0].data.next_1_hours.summary.symbol_code'
+                </code></pre>
                 <aside class="notes">
                     Those <code>`</code> are powerhell line continuation, like you would use <code>\</code> in other
                     shells
@@ -331,16 +333,37 @@
         <section>
             <section>
                 <h1>Divide and conquer</h1>
-                <h2> with <code>include</code> and <code>extends</code></h2>
-                <p>Include and extends allow reuse between multiple docker compose files</p>
+                <h2>with extensions, yml fragments, <code>include</code> and <code>extends</code></h2>
+                <p>Various techniques Include and extends allow reuse between multiple docker compose files</p>
+                <p>You should be in control of all the files, does not work well with "outside" files not written to be
+                    used this way</p>
                 <aside class="notes">
                     <p>sooner or later you you'll end up using docker for multiple things. perhaps sometimes run the
                         frontend and backend locally, but using an external database instead of a local one. or maybe
                         sometimes configured for extra logging. Eventually editing the docker compose for specific
                         scenarios, and remembering to undo before committing, becomes a pain in the &#x1facf;. At this
-                        point itś logical to start introducing different compose files for different purposes, and you
+                        point it's logical to start introducing different compose files for different purposes, and you
                         will soon run into the problem of having duplicates and keeping them in sync. That's when being
                         able to split a compose file into reusable parts becomes useful</p>
+                </aside>
+            </section>
+
+            <section>
+                <p>Yml prefixed with <code>x-</code> can be placed "anywhere" in the file where user defined keys are
+                    not expected, and will be ignored. Use it together with yml aliases and merge to reuse</p>
+                <pre><code class="language-yaml" data-trim>
+                    x-env: &amp;env
+                      foo: "FOO"
+                    services:
+                      serviceA:
+                        environment: *env
+                      serviceB:
+                        environment:
+                          &lt;&lt;: *env
+                          bar: "Additional env value"
+                </code></pre>
+                <aside class="notes">&quot;User defined&quot; are things like <code>environment</code> that can have any
+                    key
                 </aside>
             </section>
 

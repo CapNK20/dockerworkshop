@@ -1,0 +1,17 @@
+x-servicetemplates:
+  backend_template: &backend_template
+    build:
+      context: backend
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      URLS: "http://*:3000"
+    ports:
+      - "8080:3000"
+
+services:
+  backend: *backend_template
+
+  backend2:
+    <<: *backend_template
+    ports:
+      - "8081:3000"
