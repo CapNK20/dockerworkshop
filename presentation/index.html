@@ -51,8 +51,8 @@
                 <ul>
                     <li>Docker desktop</li>
                     <li>A Jetbrains IDE or Visual Studio Code</li>
-                    <li>Chrome or Safari?</li>
-                    <li>Terminal or Warp</li>
+                    <li>Chrome or Safari</li>
+                    <li>Terminal, Warp or similar</li>
                 </ul>
             </section>
 
@@ -93,7 +93,7 @@
                 <li>Arrow keys to navigate slides</li>
                 <li><code>O</code> or <code>Esc</code> to open the overview</li>
                 <li><code>S</code> to open the speaker notes</li>
-                <li><code>Alt</code> + <code>mouse click</code> to zoom</li>
+                <li><code>Alt [option]</code> + <code>mouse click</code> to zoom</li>
             </ul>
         </section>
 
@@ -106,9 +106,11 @@
             <section>
                 <h1>Why?</h1>
                 <ul>
-                    <li>Keep things only needed for building out of the final image</li>
+                    <li>Keep things only needed for building out of the final image </li> 
+                    <li>Reduce image size</li>
                     <li>Separation of concerns</li>
                     <li>Optimize build</li>
+                    <li>Security</li>
                 </ul>
                 <aside class="notes">
                     <p>Keeping things out of the final image has two advantages. 1: The less that is there the less
@@ -197,14 +199,14 @@
             <section>
                 <code>examples/scratch</code>
                 <pre><code class="language-bash" data-trim>
-                    $ docker build -t tiny
+                    $ docker build -t tiny .
                     $ docker run --rm tiny
                     Hello, world!
                 </code></pre>
                 <p>Pull down some common base images and compare sizes</p>
                 <pre><code class="language-bash" data-trim>
                     $ docker pull ubuntu
-                    $ docker pul alpine
+                    $ docker pull alpine
                     $ docker image ls --filter=reference=ubuntu \
                         --filter=reference=alpine --filter=reference=tiny
                 </code></pre>
@@ -260,7 +262,7 @@
             </section>
 
             <section>
-                <h2>Example. Usinq jq to parse json, without having jq installed: </h2>
+                <h2>Example. Using jq to parse json, without having jq installed: </h2>
                 <p>powershell:</p>
                 <pre><code class="language-powershell" data-trim>
                     Invoke-WebRequest -Uri `
