@@ -142,6 +142,18 @@
                     parallell. The final image depends on both of them so will be build last.
                 </aside>
             </section>
+
+            <section>
+                <code>examples/multistage</code>
+                <pre><code class="language-bash" data-trim>
+                    $ docker build -t multistage .
+                </code></pre>
+                <p>Compare image sizes</p>
+                 <pre><code class="language-bash" data-trim>
+                    $ docker image ls --filter=reference=node:18 \
+                    --filter=reference=nginx:1.25.1-alpine --filter=reference=multistage
+                </code></pre>
+            </section>
         </section>
 
         <section>
