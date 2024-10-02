@@ -106,7 +106,7 @@
             <section>
                 <h1>Why?</h1>
                 <ul>
-                    <li>Keep things only needed for building out of the final image </li> 
+                    <li>Keep things only needed for building out of the final image</li>
                     <li>Reduce image size</li>
                     <li>Separation of concerns</li>
                     <li>Optimize build</li>
@@ -123,7 +123,7 @@
 
             <section>
                 <h1>How?</h1>
-                <pre><code class="language-dockerfile" data-trim>
+                <pre><code class="language-dockerfile" data-line-numbers="1,5,9|10-11" data-trim>
                     FROM sdk AS builder
                     COPY source .
                     RUN build.sh
@@ -190,8 +190,7 @@
                 RUN buid_static_executable
 
                 FROM scratch
-                COPY --from=build /build/output/static_executable \
-                  /bin/static_executable
+                COPY --from=build /build/output/static_executable /bin/static_executable
                 ENTRYPOINT ["/bin/static_executable"]
             </code></pre>
             </section>
@@ -535,7 +534,7 @@
                         uses temporary files or writes logs to files
                     </li>
                     <li>Remember to make any volumes readonly if the service doesn't need to write to them</li>
-                    <li><code>tmpfs</code>for temporary files you don't need to keep</li>
+                    <li><code>tmpfs</code> for temporary files you don't need to keep</li>
                     <li><code>noexec</code> if you can</li>
                 </ul>
             </section>
@@ -571,11 +570,12 @@
             </section>
 
             <section>
-                <p>Example by running devcontainer from earlier. Grabbing the image is and scanning that. Should
+                <p>Example by running devcontainer from earlier. Grabbing the image id and scanning that. Should
                     get some hits because of old node</p>
                 <ul>
                     <li>Find the image name in docker desktop or the output of <code>docker image ls</code>. On windows
-                        it is something similar to <code>vsc-devcontainers-{randomid}-uid</code> but this might vary.
+                        using visual studio code it is something similar to
+                        <code>vsc-devcontainers-{randomid}-uid</code> but this might vary.
                     </li>
                     <li>Run <code>docker scout cves {imagename}</code> and examine the output</li>
                 </ul>
